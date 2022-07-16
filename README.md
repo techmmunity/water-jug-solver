@@ -7,9 +7,6 @@
 <a href="https://github.com/techmmunity/eslint-config">
 	<img src="https://img.shields.io/badge/style%20guide-Techmmunity-01d2ce?style=for-the-badge" alt="Style Guide: Techmmunity">
 </a>
-<a href="https://www.codefactor.io/repository/github/techmmunity/water-jug-solver">
-	<img src="https://www.codefactor.io/repository/github/techmmunity/water-jug-solver/badge?style=for-the-badge" alt="CodeFactor">
-</a>
 <a href="https://coveralls.io/github/techmmunity/water-jug-solver?branch=master">
 	<img src="https://img.shields.io/coveralls/github/techmmunity/water-jug-solver/master?style=for-the-badge" alt="Coveralls">
 </a>
@@ -71,6 +68,7 @@ console.log(
 // Output
 
 {
+	solvable: true,
 	minSteps: 4,
 	smallerJugCapacity: 2,
 	biggerJugCapacity: 10,
@@ -109,7 +107,7 @@ console.log(
 				destinationJug: "BIGGER",
 			},
 		},
-	];
+	],
 }
 ```
 
