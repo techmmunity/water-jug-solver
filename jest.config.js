@@ -6,9 +6,10 @@ module.exports = {
 	rootDir: "src",
 	testRegex: ".*\\.spec\\.ts$",
 	transform: {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		"^.+\\.(t|j)s$": "ts-jest",
 	},
-	collectCoverageFrom: ["**/*.ts"],
+	collectCoverageFrom: ["**/*.ts", "!./index.ts"],
 	// setupFiles: ["./v1/tests/setup.ts"],
 	coverageDirectory: "../coverage",
 	testEnvironment: "node",
