@@ -4,7 +4,8 @@
 
 ```
 | src
-| - - subfolder
+| - - solution (folder where the feature is)
+| - - - - index.ts (where the feature is)
 | README.md (Project presentation and documentation)
 ```
 
@@ -13,10 +14,7 @@
 #### Files
 
 - All files names are written in `kebab-case`
-- One feature per file
 
 #### Folders
 
 - All folders names are written in `kebab-case`
-
-#### Tests

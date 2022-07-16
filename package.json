@@ -1,25 +1,25 @@
 {
-	"name": "@techmmunity/base-project-packages",
+	"name": "@techmmunity/water-jug-solver",
 	"version": "0.0.1",
 	"main": "index.js",
 	"types": "index.d.ts",
 	"license": "Apache-2.0",
 	"author": "Techmmunity",
-	"description": "Description",
-	"homepage": "https://github.com/techmmunity/base-project-packages#readme",
+	"description": "Water Jug Challenge Solver",
+	"homepage": "https://github.com/techmmunity/water-jug-solver#readme",
 	"bugs": {
-		"url": "https://github.com/techmmunity/base-project-packages/issues"
+		"url": "https://github.com/techmmunity/water-jug-solver/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/techmmunity/base-project-packages.git"
+		"url": "git+https://github.com/techmmunity/water-jug-solver.git"
 	},
 	"keywords": [
-		"package",
-		"keywords"
+		"water-jug",
+		"challenge"
 	],
 	"devDependencies": {
-		"@techmmunity/eslint-config": "^5.0.2",
+		"@techmmunity/eslint-config": "^5.2.3",
 		"@types/jest": "^26.0.24",
 		"@vercel/ncc": "^0.29.0",
 		"eslint": "^7.31.0",
@@ -42,5 +42,6 @@
 		"update-dependencies": "yarn upgrade-interactive --latest",
 		"husky:pre-commit": "tsc",
 		"lk": "yarn build && cp package.json dist/package.json && cd dist && yarn link && cd .."
-	}
+	},
+	"dependencies": {}
 }
