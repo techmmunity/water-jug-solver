@@ -34,8 +34,6 @@ One can perform the following operations on the jug:
 
 The task is to determine whether it is possible to measure Z litres of water using both the jugs. And if true, print any of the possible ways.
 
-**ALERT:** It still doesn't find the most efficient solution for all cases. If you want to fix this, please send a PR to this repo.
-
 ## Install
 
 With Yarn:
@@ -71,19 +69,21 @@ console.log(
 	solvable: true,
 	minSteps: 4,
 	smallerJugCapacity: 2,
-	biggerJugCapacity: 10,
+	largerJugCapacity: 10,
 	steps: [
 		{
 			smallerJugContent: 2,
-			biggerJugContent: 0,
+			largerJugContent: 0,
+			index: "2,0",
 			action: {
 				type: "FILL",
-				bucket: "SMALLER",
+				jug: "SMALLER",
 			},
 		},
 		{
 			smallerJugContent: 0,
-			biggerJugContent: 2,
+			largerJugContent: 2,
+			index: "0,2",
 			action: {
 				type: "TRANSFER",
 				originJug: "SMALLER",
@@ -92,15 +92,17 @@ console.log(
 		},
 		{
 			smallerJugContent: 2,
-			biggerJugContent: 2,
+			largerJugContent: 2,
+			index: "2,2",
 			action: {
 				type: "FILL",
-				bucket: "SMALLER",
+				jug: "SMALLER",
 			},
 		},
 		{
 			smallerJugContent: 0,
-			biggerJugContent: 4,
+			largerJugContent: 4,
+			index: "0,4",
 			action: {
 				type: "TRANSFER",
 				originJug: "SMALLER",

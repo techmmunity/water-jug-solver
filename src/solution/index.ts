@@ -1,180 +1,137 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { getBiggerJug, getSmallerJug } from "./helpers";
 
+import { makeActions } from "./helpers/actions";
+import { addStepToPossibleSolutions } from "./helpers/add-step-to-possible-solutions";
+import { getJugs } from "./helpers/get-jugs";
+import { getStates } from "./helpers/get-states";
+import { getStepIndex } from "./helpers/get-step-index";
+import { isEven, isOdd } from "./helpers/is-even-odd";
+import { stepHasGoal } from "./helpers/state-has-goal";
+
+import { JugEnum } from "../enums/jug";
 import { StepActionEnum } from "../enums/step-action";
 import type { WaterJugSolution, SolutionStep } from "../types/solution";
-import { JugEnum } from "enums/jug";
 
 interface SolveInput {
 	firstJugCapacity: number;
 	secondJugCapacity: number;
 	desiredAmount: number;
 }
-
 export const solve = ({
 	firstJugCapacity,
 	secondJugCapacity,
 	desiredAmount,
-}: SolveInput): WaterJugSolution => {
-	const smallerJugCapacity = getSmallerJug(firstJugCapacity, secondJugCapacity);
-	const biggerJugCapacity = getBiggerJug(firstJugCapacity, secondJugCapacity);
+}: // eslint-disable-next-line sonarjs/cognitive-complexity
+SolveInput): WaterJugSolution => {
+	const { smallerJugCapacity, largerJugCapacity } = getJugs({
+		firstJugCapacity,
+		secondJugCapacity,
+	});
 
-	// Smaller Jug has the desired amount
+	const UNSOLVABLE: WaterJugSolution = {
+		solvable: false,
+		minSteps: 0,
+		smallerJugCapacity,
+		largerJugCapacity,
+		steps: [],
+	};
 
-	if (smallerJugCapacity === desiredAmount) {
-		return {
-			solvable: true,
-			minSteps: 1,
-			smallerJugCapacity,
-			biggerJugCapacity,
-			steps: [
-				{
-					smallerJugContent: smallerJugCapacity,
-					biggerJugContent: 0,
-					action: {
-						type: StepActionEnum.FILL,
-						jug: JugEnum.SMALLER,
-					},
-				},
-			],
-		};
+	// Desired amount can't be more water than the combined jugs.
+
+	if (firstJugCapacity + secondJugCapacity < desiredAmount) {
+		return UNSOLVABLE;
 	}
 
-	// Bigger Jug has the desired amount
+	// If desired amount is odd and jugs are even, is impossible.
 
-	if (biggerJugCapacity === desiredAmount) {
-		return {
-			solvable: true,
-			minSteps: 1,
-			smallerJugCapacity,
-			biggerJugCapacity,
-			steps: [
-				{
-					smallerJugContent: 0,
-					biggerJugContent: biggerJugCapacity,
-					action: {
-						type: StepActionEnum.FILL,
-						jug: JugEnum.BIGGER,
-					},
-				},
-			],
-		};
+	if (
+		isEven(firstJugCapacity) &&
+		isEven(secondJugCapacity) &&
+		isOdd(desiredAmount)
+	) {
+		return UNSOLVABLE;
 	}
 
-	// The sum of the capacities is the desired amount
+	// State
 
-	if (desiredAmount === smallerJugCapacity + biggerJugCapacity) {
-		return {
-			solvable: true,
-			minSteps: 2,
-			smallerJugCapacity,
-			biggerJugCapacity,
-			steps: [
-				{
-					smallerJugContent: smallerJugCapacity,
-					biggerJugContent: 0,
-					action: {
-						type: StepActionEnum.FILL,
-						jug: JugEnum.SMALLER,
-					},
-				},
-				{
-					smallerJugContent: smallerJugCapacity,
-					biggerJugContent: biggerJugCapacity,
-					action: {
-						type: StepActionEnum.FILL,
-						jug: JugEnum.BIGGER,
-					},
-				},
-			],
-		};
-	}
-
-	// Unsolvable
-
-	const diffBetweenCapacities = biggerJugCapacity - smallerJugCapacity;
-
-	if (!Number.isInteger(diffBetweenCapacities / desiredAmount)) {
-		return {
-			solvable: false,
-			minSteps: 0,
-			smallerJugCapacity,
-			biggerJugCapacity,
-			steps: [],
-		};
-	}
-
-	// Start from the smaller bucket
-
-	let smallerJug = smallerJugCapacity;
-	let biggerJug = 0;
-
-	const solutionSteps: Array<SolutionStep> = [
-		{
-			smallerJugContent: smallerJugCapacity,
-			biggerJugContent: 0,
-			action: {
-				type: StepActionEnum.FILL,
-				jug: JugEnum.SMALLER,
-			},
+	const initialStep: SolutionStep = {
+		smallerJugContent: 0,
+		largerJugContent: 0,
+		index: "0,0",
+		action: {
+			type: StepActionEnum.EMPTY,
+			jug: JugEnum.SMALLER,
 		},
-	];
+	};
 
-	while (smallerJug !== desiredAmount && biggerJug !== desiredAmount) {
-		const maxPouredAmount = Math.min(smallerJug, biggerJugCapacity - biggerJug);
+	const stepsToTryFrom: Array<SolutionStep> = [initialStep];
+	let possibleSolutions: Array<Array<SolutionStep>> = [[initialStep]];
+	const stepsMap = new Map();
+	stepsMap.set(initialStep.index, []);
 
-		biggerJug += maxPouredAmount;
-		smallerJug -= maxPouredAmount;
-		solutionSteps.push({
-			smallerJugContent: smallerJug,
-			biggerJugContent: biggerJug,
-			action: {
-				type: StepActionEnum.TRANSFER,
-				originJug: JugEnum.SMALLER,
-				destinationJug: JugEnum.BIGGER,
-			},
+	const actions = makeActions({
+		smallerJugCapacity,
+		largerJugCapacity,
+	});
+
+	// Loop to solve
+
+	while (stepsToTryFrom.length) {
+		const previousStep = stepsToTryFrom.shift()!;
+		const previousStepString = getStepIndex(previousStep);
+
+		const nextStates = getStates({
+			actions,
+			previousStep,
 		});
 
-		if (smallerJug === desiredAmount || biggerJug === desiredAmount) {
-			return {
-				solvable: true,
-				minSteps: solutionSteps.length,
-				smallerJugCapacity,
-				biggerJugCapacity,
-				steps: solutionSteps,
-			};
-		}
+		for (const state of nextStates) {
+			const stepString = getStepIndex(state);
 
-		if (smallerJug === 0) {
-			smallerJug = smallerJugCapacity;
-			solutionSteps.push({
-				smallerJugContent: smallerJug,
-				biggerJugContent: biggerJug,
-				action: {
-					type: StepActionEnum.FILL,
-					jug: JugEnum.SMALLER,
-				},
-			});
-		}
+			const seen = stepsMap.has(stepString);
 
-		if (biggerJug === biggerJugCapacity) {
-			biggerJug = 0;
-			solutionSteps.push({
-				smallerJugContent: smallerJug,
-				biggerJugContent: biggerJug,
-				action: {
-					type: StepActionEnum.EMPTY,
-					jug: JugEnum.BIGGER,
-				},
-			});
+			if (!seen) {
+				stepsMap.set(stepString, []);
+				stepsMap.get(previousStepString).push(stepString);
+
+				const { possibleSolutions: newPossibleSolutions, solutionDeep } =
+					addStepToPossibleSolutions({
+						possibleSolutions,
+						previousStep,
+						step: state,
+					});
+
+				// eslint-disable-next-line max-depth
+				if (solutionDeep >= 100) {
+					return UNSOLVABLE;
+				}
+
+				possibleSolutions = newPossibleSolutions;
+
+				stepsToTryFrom.push(state);
+			}
+
+			if (
+				stepHasGoal({
+					smallerJugContent: state.smallerJugContent,
+					largerJugContent: state.largerJugContent,
+					desiredAmount,
+				})
+			) {
+				const solutionSteps = possibleSolutions
+					.find(path => path.at(-1)?.index === state.index)!
+					.slice(1);
+
+				return {
+					solvable: true,
+					minSteps: solutionSteps.length,
+					smallerJugCapacity,
+					largerJugCapacity,
+					steps: solutionSteps,
+				};
+			}
 		}
 	}
 
-	return {
-		solvable: true,
-		minSteps: solutionSteps.length,
-		smallerJugCapacity,
-		biggerJugCapacity,
-		steps: solutionSteps,
-	};
+	return UNSOLVABLE;
 };
