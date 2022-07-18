@@ -25,7 +25,8 @@ type Action = EmptyAction | FillAction | TransferAction;
 
 export interface SolutionStep {
 	smallerJugContent: number;
-	biggerJugContent: number;
+	largerJugContent: number;
+	index: string;
 	action: Action;
 }
 
@@ -33,6 +34,6 @@ export interface WaterJugSolution {
 	solvable: boolean;
 	minSteps: number;
 	smallerJugCapacity: number;
-	biggerJugCapacity: number;
+	largerJugCapacity: number;
 	steps: Array<SolutionStep>;
 }

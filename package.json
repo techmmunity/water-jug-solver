@@ -1,6 +1,6 @@
 {
 	"name": "@techmmunity/water-jug-solver",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"main": "index.js",
 	"types": "index.d.ts",
 	"license": "Apache-2.0",

@@ -14,12 +14,13 @@ describe("solve", () => {
 		expect(result).toStrictEqual({
 			solvable: true,
 			minSteps: 1,
-			biggerJugCapacity: 10,
 			smallerJugCapacity: 2,
+			largerJugCapacity: 10,
 			steps: [
 				{
-					biggerJugContent: 0,
 					smallerJugContent: 2,
+					largerJugContent: 0,
+					index: "2,0",
 					action: {
 						type: StepActionEnum.FILL,
 						jug: JugEnum.SMALLER,
@@ -29,7 +30,7 @@ describe("solve", () => {
 		});
 	});
 
-	it("should work with biggerJugCapacity = desiredAmount", () => {
+	it("should work with largerJugCapacity = desiredAmount", () => {
 		const result = solve({
 			firstJugCapacity: 2,
 			secondJugCapacity: 10,
@@ -39,15 +40,16 @@ describe("solve", () => {
 		expect(result).toStrictEqual({
 			solvable: true,
 			minSteps: 1,
-			biggerJugCapacity: 10,
 			smallerJugCapacity: 2,
+			largerJugCapacity: 10,
 			steps: [
 				{
-					biggerJugContent: 10,
 					smallerJugContent: 0,
+					largerJugContent: 10,
+					index: "0,10",
 					action: {
 						type: StepActionEnum.FILL,
-						jug: JugEnum.BIGGER,
+						jug: JugEnum.LARGER,
 					},
 				},
 			],
@@ -63,42 +65,27 @@ describe("solve", () => {
 
 		expect(result).toStrictEqual({
 			solvable: true,
-			minSteps: 4,
-			biggerJugCapacity: 10,
+			minSteps: 2,
 			smallerJugCapacity: 2,
+			largerJugCapacity: 10,
 			steps: [
 				{
-					biggerJugContent: 0,
 					smallerJugContent: 2,
+					largerJugContent: 0,
+					index: "2,0",
 					action: {
 						type: StepActionEnum.FILL,
 						jug: JugEnum.SMALLER,
 					},
 				},
 				{
-					biggerJugContent: 2,
-					smallerJugContent: 0,
-					action: {
-						type: StepActionEnum.TRANSFER,
-						originJug: JugEnum.SMALLER,
-						destinationJug: JugEnum.BIGGER,
-					},
-				},
-				{
-					biggerJugContent: 2,
 					smallerJugContent: 2,
-					action: {
-						type: StepActionEnum.FILL,
-						jug: JugEnum.SMALLER,
-					},
-				},
-				{
-					biggerJugContent: 4,
-					smallerJugContent: 0,
+					largerJugContent: 2,
+					index: "2,2",
 					action: {
 						type: StepActionEnum.TRANSFER,
-						originJug: JugEnum.SMALLER,
-						destinationJug: JugEnum.BIGGER,
+						originJug: JugEnum.LARGER,
+						destinationJug: JugEnum.SMALLER,
 					},
 				},
 			],
@@ -114,42 +101,27 @@ describe("solve", () => {
 
 		expect(result).toStrictEqual({
 			solvable: true,
-			minSteps: 4,
-			biggerJugCapacity: 9,
+			minSteps: 2,
 			smallerJugCapacity: 3,
+			largerJugCapacity: 9,
 			steps: [
 				{
-					biggerJugContent: 0,
 					smallerJugContent: 3,
+					largerJugContent: 0,
+					index: "3,0",
 					action: {
 						type: StepActionEnum.FILL,
 						jug: JugEnum.SMALLER,
 					},
 				},
 				{
-					biggerJugContent: 3,
-					smallerJugContent: 0,
-					action: {
-						type: StepActionEnum.TRANSFER,
-						originJug: JugEnum.SMALLER,
-						destinationJug: JugEnum.BIGGER,
-					},
-				},
-				{
-					biggerJugContent: 3,
 					smallerJugContent: 3,
-					action: {
-						type: StepActionEnum.FILL,
-						jug: JugEnum.SMALLER,
-					},
-				},
-				{
-					biggerJugContent: 6,
-					smallerJugContent: 0,
+					largerJugContent: 3,
+					index: "3,3",
 					action: {
 						type: StepActionEnum.TRANSFER,
-						originJug: JugEnum.SMALLER,
-						destinationJug: JugEnum.BIGGER,
+						destinationJug: JugEnum.SMALLER,
+						originJug: JugEnum.LARGER,
 					},
 				},
 			],
@@ -166,22 +138,24 @@ describe("solve", () => {
 		expect(result).toStrictEqual({
 			solvable: true,
 			minSteps: 2,
-			biggerJugCapacity: 2,
 			smallerJugCapacity: 2,
+			largerJugCapacity: 2,
 			steps: [
 				{
-					biggerJugContent: 0,
 					smallerJugContent: 2,
+					largerJugContent: 0,
+					index: "2,0",
 					action: {
 						jug: JugEnum.SMALLER,
 						type: StepActionEnum.FILL,
 					},
 				},
 				{
-					biggerJugContent: 2,
 					smallerJugContent: 2,
+					largerJugContent: 2,
+					index: "2,2",
 					action: {
-						jug: JugEnum.BIGGER,
+						jug: JugEnum.LARGER,
 						type: StepActionEnum.FILL,
 					},
 				},
@@ -189,7 +163,7 @@ describe("solve", () => {
 		});
 	});
 
-	it('should return "solvable: false"', () => {
+	it('should return "solvable: false" (Solution require more than 100 steps)', () => {
 		const result = solve({
 			firstJugCapacity: 3,
 			secondJugCapacity: 9,
@@ -199,11 +173,55 @@ describe("solve", () => {
 		expect(result).toStrictEqual({
 			solvable: false,
 			minSteps: 0,
-			biggerJugCapacity: 9,
+			largerJugCapacity: 9,
 			smallerJugCapacity: 3,
 			steps: [],
 		});
 	});
 
-	it.todo("should work starting by the bigger jug and then removing water");
+	it("should work starting by the larger jug and then removing water", () => {
+		const result = solve({
+			firstJugCapacity: 3,
+			secondJugCapacity: 5,
+			desiredAmount: 4,
+		});
+
+		expect(result).toStrictEqual({
+			solvable: true,
+			minSteps: 3,
+			smallerJugCapacity: 3,
+			largerJugCapacity: 5,
+			steps: [
+				{
+					smallerJugContent: 0,
+					largerJugContent: 5,
+					index: "0,5",
+					action: {
+						jug: JugEnum.LARGER,
+						type: StepActionEnum.FILL,
+					},
+				},
+				{
+					smallerJugContent: 0,
+					largerJugContent: 3,
+					index: "0,3",
+					action: {
+						destinationJug: JugEnum.SMALLER,
+						originJug: JugEnum.LARGER,
+						type: StepActionEnum.TRANSFER,
+					},
+				},
+				{
+					smallerJugContent: 3,
+					largerJugContent: 1,
+					index: "3,1",
+					action: {
+						destinationJug: JugEnum.LARGER,
+						originJug: JugEnum.LARGER,
+						type: StepActionEnum.TRANSFER,
+					},
+				},
+			],
+		});
+	});
 });
